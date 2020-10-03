@@ -332,3 +332,23 @@ niyoζ:~/Taller de Programación I/TP0-9508$ diff paso2_main.c paso3_main.c || d
 \> #include <string.h>
 \> #include <stdio.h>
 ```
+
+## PASO 4
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ diff paso3_main.c paso4_main.c || diff paso3_wordscounter.c paso4_wordscounter.c || diff paso3_wordscounter.h paso4_wordscounter.h
+4c4
+< #include "paso3_wordscounter.h"
+\---
+\> #include "paso4_wordscounter.h"
+1c1
+< #include "paso3_wordscounter.h"
+\---
+\> #include "paso4_wordscounter.h"
+15a16,19
+\> }
+\>
+\> void wordscounter_destroy(wordscounter_t *self) {
+\>     //do nothing
+```
+

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "paso2_wordscounter.h"
+#include "paso4_wordscounter.h"
 
 #define SUCCESS 0
 #define ERROR -1
