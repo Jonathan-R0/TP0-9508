@@ -13,10 +13,10 @@ Este es el primer trabajo de la materia Taller de Programación I. Tiene como ob
 ### a) Output del programa "main.c" sin y con valgrind respectivamente. 
 
 ```
-niyoζ:~/Taller-de-Programacion-9508/tp0$ gcc main.c -o tp
-niyoζ:~/Taller-de-Programacion-9508/tp0$ ./tp
+niyoζ:~/Taller-de-Programación-I/TP0-9508$ gcc main.c -o tp
+niyoζ:~/Taller-de-Programación-I/TP0-9508$ ./tp
 Hola mundo!
-niyoζ:~/Taller-de-Programacion-9508/tp0$ valgrind ./tp
+niyoζ:~/Taller-de-Programación-I/TP0-9508$ valgrind ./tp
 ==7545== Memcheck, a memory error detector
 ==7545== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==7545== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
@@ -149,4 +149,125 @@ El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que
 
 El Makefile que se usa para este proyecto tiene los flags: ```CFLAGS = -Wall -Werror -pedantic -pedantic-errors``` y particularmente el flag ```-Werror``` ***transforma todos los warnings en errors.***
 
+## PASO 2
 
+#### Desempaquetando y compilando el codigo...
+
+```
+Descomprimiendo el codigo 'source_unsafe.zip'...
+Archive:  source_unsafe.zip
+  inflating: source_unsafe/paso2_main.c
+  inflating: source_unsafe/paso2_wordscounter.c
+  inflating: source_unsafe/paso2_wordscounter.h
+  inflating: source_unsafe/README.md
+Compilando el codigo...
+  CC  paso2_wordscounter.o
+In file included from paso2_wordscounter.c:1:
+paso2_wordscounter.h:7:5: error: unknown type name ‘size_t’
+    7 |     size_t words;
+      |     ^~~~~~
+paso2_wordscounter.h:20:1: error: unknown type name ‘size_t’
+   20 | size_t wordscounter_get_words(wordscounter_t *self);
+      | ^~~~~~
+paso2_wordscounter.h:1:1: note: ‘size_t’ is defined in header ‘<stddef.h>’; did you forget to ‘#include <stddef.h>’?
+  +++ |+#include <stddef.h>
+    1 | #ifndef __WORDSCOUNTER_H__
+paso2_wordscounter.h:25:49: error: unknown type name ‘FILE’
+   25 | void wordscounter_process(wordscounter_t *self, FILE *text_file);
+      |                                                 ^~~~
+paso2_wordscounter.h:1:1: note: ‘FILE’ is defined in header ‘<stdio.h>’; did you forget to ‘#include <stdio.h>’?
+  +++ |+#include <stdio.h>
+    1 | #ifndef __WORDSCOUNTER_H__
+paso2_wordscounter.c:17:8: error: conflicting types for ‘wordscounter_get_words’
+   17 | size_t wordscounter_get_words(wordscounter_t *self) {
+      |        ^~~~~~~~~~~~~~~~~~~~~~
+In file included from paso2_wordscounter.c:1:
+paso2_wordscounter.h:20:8: note: previous declaration of ‘wordscounter_get_words’ was here
+   20 | size_t wordscounter_get_words(wordscounter_t *self);
+      |        ^~~~~~~~~~~~~~~~~~~~~~
+paso2_wordscounter.c: In function ‘wordscounter_next_state’:
+paso2_wordscounter.c:30:25: error: implicit declaration of function ‘malloc’ [-Wimplicit-function-declaration]
+   30 |     char* delim_words = malloc(7 * sizeof(char));
+      |                         ^~~~~~
+paso2_wordscounter.c:30:25: error: incompatible implicit declaration of built-in function ‘malloc’ [-Werror]
+paso2_wordscounter.c:5:1: note: include ‘<stdlib.h>’ or provide a declaration of ‘malloc’
+    4 | #include <stdbool.h>
+  +++ |+#include <stdlib.h>
+    5 |
+cc1: all warnings being treated as errors
+make: *** [<builtin>: paso2_wordscounter.o] Error 1
+
+real    0m0.034s
+user    0m0.021s
+sys     0m0.012s
+[Error] Fallo la compilacion del codigo en 'source_unsafe.zip'. Codigo de error 2
+```
+
+El paso 2 sigue generando errores de compilación:
+
+- En el archivo ```paso2_wordscounter.h``` (lineas 7 y 20) se quiere usar el tipo ```size_t``` sin incluir su definición en ```<stddef.h>```.
+- Dentro del mismo archivo, en la línea 25 que se se quiere apuntar a una variable de tipo ```FILE``` sin incluir su definición en ```<stdio.h>```.
+- En el archivo ```paso2_wordscounter.c``` la función ```wordscounter_get_words``` piensa que el tipo de dato que devuelve no es el mismo que está declarado en el header. Esto ocurre ya que no se define ```size_t```.
+- Finalmente en la línea 30 del mismo archivo se está llamando a ```malloc``` sin incluir su definición en ```<stdlib.h>```.
+
+#### Verificando el codigo...
+
+```
+Done processing /task/student//source_unsafe/paso2_wordscounter.c
+Done processing /task/student//source_unsafe/paso2_main.c
+Done processing /task/student//source_unsafe/paso2_wordscounter.h
+```
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ diff paso1_main.c paso2_main.c || diff paso1_wordscounter.c paso2_wordscounter.c || diff paso1_wordscounter.h paso2_wordscounter.h
+3a4
+\> #include "paso2_wordscounter.h"
+12c13
+<         strcpy(filepath, argv[1]);
+\---
+\>         memcpy(filepath, argv[1], strlen(argv[1]) + 1);
+14,15c15
+<     }
+<     else {
+\---
+\>     } else {
+0a1
+\> #include "paso2_wordscounter.h"
+4d4
+< #include "paso1_wordscounter.h"
+13,14c13
+< void wordscounter_create(wordscounter_t *self)
+< {
+\---
+\> void wordscounter_create(wordscounter_t *self) {
+27c26
+<     } while(state != STATE_FINISHED);
+\---
+\>     } while (state != STATE_FINISHED);
+41c40
+<     if (  c == EOF) {
+\---
+\>     if (c == EOF) {
+46,48c45,46
+<     }
+<     else if (state == STATE_IN_WORD) {
+<         if(strchr(delim_words, c) != NULL) {
+\---
+\>     } else if (state == STATE_IN_WORD) {
+\>         if (strchr(delim_words, c) != NULL) {
+53c51
+<     return next_state ;
+\---
+\>     return next_state;
+5c5
+< // Tipo wordscounter_t: almacena la cantidad de palabras procesadas de un archivo.
+\---
+\> // Tipo wordscounter_t: procesa cantidad de palabras dentro de un archivo.
+```
+Vemos con estos diff, que del paso1 al paso2, se eliminaron todos los errores generados en esta sección del output del SERCOM. Ya no se usan funciones inseguras y la sintaxis fue arreglada.     
+
+#### Finalizando...
+
+```
+El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que arreglar esto antes de poder continuar.
+```
