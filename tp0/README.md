@@ -1,8 +1,8 @@
-#Trabajo Práctico 0
+# Trabajo Práctico 0
 
-##PASO 0: Entorno de Trabajo
+## PASO 0: Entorno de Trabajo
 
-###a) Output del programa "main.c" sin y con valgrind respectivamente. 
+### a) Output del programa "main.c" sin y con valgrind respectivamente. 
 
 ```
 niyoζ:~/Taller-de-Programacion-9508/tp0$ gcc main.c -o tp
@@ -27,7 +27,7 @@ Hola mundo!
 niyoζ:~/Taller-de-Programacion-9508/tp0$
 ```
 
-###b) Utilidades de Valgrind y opciones más comunes.
+### b) Utilidades de Valgrind y opciones más comunes.
 
 ***Valgrind*** es un software cuya finalidad está mayoritariamente en facilitar el debugging de un programa, permitiéndote saber cuando tenés pérdidas de memoria en tu código o rastrear facilmente variables no inicializadas, entre otros casos.
 
@@ -37,11 +37,11 @@ En el ejemplo antes dado vemos el mensaje ```All heap blocks were freed -- no le
 
 Las opciones más comunes de este son:  ```--leak-check=full``` especifica por la salida estándar del programa todas las pérdidas de memoria que haya tenido el programa;  ```--track-origins=yes``` muestra el origen de las variables no inicializadas; ```--track-fds=yes``` muestra que archivos quedaron abiertos; ```--show-reachable=yes``` muestra que bloques de memoria no liberados aun son alcanzables.  
 
-###c) Función ***sizeof()***
+### c) Función ***sizeof()***
 
 La función ***sizeof()*** recibe una variable y devuelve el tamaño del mismo en bytes. El valor que devuelve depende de cada arquitectura. En el caso de ***sizeof(char)*** el resultado es 1 ya que codificamos todo caracter con 8 bits y luego ***sizeof(int)*** es 4. Pero en casos como ***sizeof(void*)*** puede ocurrir que si estamos en una arquitectura de 32 bits el resultado sea 4 y en 64 bits el resultado sea 8 (es decir, la cantidad de bits necesarios para representar un puntero cambió entre arquitecturas). 
 
-###d) ***Sizeof() meets structs***
+### d) ***Sizeof() meets structs***
 
 Sea el siguiente ejemplo de código en C en una arquitectura x86 de 64 bits:
 
@@ -59,7 +59,7 @@ Queda entonces demostrado que no siempre ocurre que el ```sizeof(struct s)``` es
 
 
 
-###e) STDIN, STDOUT y STDERR
+### e) STDIN, STDOUT y STDERR
 
 Estos 3 archivos son la entrada estándar de datos, salida estándar de datos y salida de errores respectivamente.Son archivos que, dentro de los sistemas operativos UNIX, permanecen abiertos por cada proceso para comunicar información, ya sea entre procesos o hacia el usuario. 
 
