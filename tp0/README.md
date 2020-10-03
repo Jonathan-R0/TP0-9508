@@ -1,4 +1,10 @@
+# Taller de Programación I - Cátedra Veiga - FIUBA
 # Trabajo Práctico 0
+
+
+## Introducción
+
+Este es el primer trabajo de la materia Taller de Programación I. Tiene como objetivo nivelar los conocimientos de C y familiarizarnos con la plataforma de registros y corrección automática de trabajos SERCOM. En el siguiente se explicarán tanto las preguntas planteadas en la consigna, como el código dado y las salidas del SERCOM al interactuar con este. En cada paso se explicará la evolución de los archivos dados por la cátedra con la finalidad de acostumbrarse al sistema de entregas y a la dinámica del curso. 
 
 ## PASO 0: Entorno de Trabajo
 
@@ -34,7 +40,11 @@ Un típico ejemplo donde ***Valgrind*** puede ser muy útil, es cuando usamos me
 
 En el ejemplo antes dado vemos el mensaje ```All heap blocks were freed -- no leaks are possible``` lo que significa que no estamos dejando memoria en el heap sin liberar.
 
-Las opciones más comunes de este son:  ```--leak-check=full``` especifica por la salida estándar del programa todas las pérdidas de memoria que haya tenido el programa;  ```--track-origins=yes``` muestra el origen de las variables no inicializadas; ```--track-fds=yes``` muestra que archivos quedaron abiertos; ```--show-reachable=yes``` muestra que bloques de memoria no liberados aun son alcanzables.  
+Las opciones más comunes de este son:
+- ```--leak-check=full``` especifica por la salida estándar del programa todas las pérdidas de memoria que haya tenido el programa
+- ```--track-origins=yes``` muestra el origen de las variables no inicializadas
+- ```--track-fds=yes``` muestra que archivos quedaron abiertos
+- ```--show-reachable=yes``` muestra que bloques de memoria no liberados aun son alcanzables.  
 
 ### c) Función ***sizeof()***
 
@@ -119,7 +129,15 @@ Done processing /task/student//source_unsafe/paso1_main.c
 Total errors found: 11
 ```
 
-Yendo en orden comentaré los 11 errores mencionados. Dentro del archivo ```paso1_wordscounter.c``` Primero no se está dejando un espacio entre el while y su condición. Luego, en el if de la linea 41 hay 2 espacios extras del lado izquierdo. Dentro de la misma linea ocurre que solamente puede haber hasta un espacio (continuo) dentro de la condición. En la línea 47 no ocurre que el else if arranca donde la condición anterior termina, sino que se va una línea para abajo; las llaves deberían estar en la misma línea. En la línea 48 no hay un espacio entre el paréntesis y el if. En la línea 53 hay un espacio extra entre el "next_state" y el punto y coma. Luego en el archivo ```paso1_wordscounter.h``` se advierte que las líneas no deben tener más de 80 caracteres. Finalmente en ```paso1_main.c``` ocurre que en la línea 12 se está usando la función insegura ```strcpy()``` y recomienda usar snprintf (como se dijo en clase, strcpy es insegura ya que no sabe que tamaño tiene el buffer de destino, cosa que puede hacer que pisemos memoria que no nos corresponde). Finalmente en la línea 15 vemos que el else debería empezar donde termina la llave anterior y que las llaves deberían estar en la misma línea. 
+Yendo en orden comentaré los 11 errores mencionados: 
+- Dentro del archivo ```paso1_wordscounter.c```, linea 27, no se está dejando un espacio entre el while y su condición. 
+- Luego, en el if de la linea 41 hay 2 espacios extras del lado izquierdo. Dentro de la misma linea ocurre que solamente puede haber hasta un espacio (continuo) dentro de la condición. 
+- En la línea 47 no ocurre que el else if arranca donde la condición anterior termina, sino que se va una línea para abajo; las llaves deberían estar en la misma línea.
+- En la línea 48 no hay un espacio entre el paréntesis y el if.
+- En la línea 53 hay un espacio extra entre el "next_state" y el punto y coma. 
+- Luego en el archivo ```paso1_wordscounter.h``` se advierte que las líneas no deben tener más de 80 caracteres. 
+- Finalmente en ```paso1_main.c``` ocurre que en la línea 12 se está usando la función insegura ```strcpy()``` y recomienda usar snprintf (como se dijo en clase, strcpy es insegura ya que no sabe que tamaño tiene el buffer de destino, cosa que puede hacer que pisemos memoria que no nos corresponde). 
+- Finalmente en la línea 15 vemos que el else debería empezar donde termina la llave anterior y que las llaves deberían estar en la misma línea. 
 
 #### Finalizando...
 
@@ -127,6 +145,6 @@ Yendo en orden comentaré los 11 errores mencionados. Dentro del archivo ```paso
 El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que arreglar esto antes de poder continuar.
 ```
 
-El Makefile que se usa para este proyecto tiene los flags: ```CFLAGS = -Wall -Werror -pedantic -pedantic-errors``` y particularmente el flag ```-Werror```***transforma todos los warnings en errors.***
+El Makefile que se usa para este proyecto tiene los flags: ```CFLAGS = -Wall -Werror -pedantic -pedantic-errors``` y particularmente el flag ```-Werror``` ***transforma todos los warnings en errors.***
 
 
