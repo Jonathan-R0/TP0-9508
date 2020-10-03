@@ -55,20 +55,78 @@ Si tomamos ```sizeof(struct tp0)``` veremos que el resultado será de 16. Esto e
 
 Queda entonces demostrado que no siempre ocurre que el ```sizeof(struct s)``` es igual al ```sizeof(s1) + sizeof(s2) + ... + sizeof(sn) ``` (es decir, a la suma de sus elementos). Esto ocurre por el padding.
 
-
-
 ### e) STDIN, STDOUT y STDERR
 
 Estos 3 archivos son la entrada estándar de datos, salida estándar de datos y salida de errores respectivamente.Son archivos que, dentro de los sistemas operativos UNIX, permanecen abiertos por cada proceso para comunicar información, ya sea entre procesos o hacia el usuario. 
 
 También se puede concatenar estas salidas y entradas. Por ejemplo, si ejecuto en la términal ```ls > archivos.txt``` estaría escribiendo en mi archivo ***archivos.txt*** un listado de todos los documentos, programas y directorios que tenga almacenado en mi posición actual. Si en cambio ejecuto ```cat < archivos.txt``` estaría haciendo que el ejecutable de la izquiera reciba una lista de archivos por stdin y finalmente los imprima. También tengo al pipe que concatena el stdout del ejecutable izquierdo con el stdin del ejecutable del lado derecho del mismo. Por ejemplo si ejecuto ```cat archivos.txt | grep .txt ``` estaría conectando lo que lanza por stdout el término izquierdo (que sería una lista de los documentos del directorio donde estoy parado) al stdin del término derecho (que recibe mi lista de documentos y escribe por stdout los que tienen ".txt" en el nombre).
 
+## PASO 1
 
+#### Desempaquetando y compilando el codigo...
 
+```
+Descomprimiendo el codigo 'source_unsafe.zip'...
+Archive:  source_unsafe.zip
+  inflating: source_unsafe/paso1_main.c
+  inflating: source_unsafe/paso1_wordscounter.c
+  inflating: source_unsafe/paso1_wordscounter.h
+Compilando el codigo...
+  CC  paso1_main.o
+paso1_main.c: In function ‘main’:
+paso1_main.c:22:9: error: unknown type name ‘wordscounter_t’
+   22 |         wordscounter_t counter;
+      |         ^~~~~~~~~~~~~~
+paso1_main.c:23:9: error: implicit declaration of function ‘wordscounter_create’ [-Wimplicit-function-declaration]
+   23 |         wordscounter_create(&counter);
+      |         ^~~~~~~~~~~~~~~~~~~
+paso1_main.c:24:9: error: implicit declaration of function ‘wordscounter_process’ [-Wimplicit-function-declaration]
+   24 |         wordscounter_process(&counter, input);
+      |         ^~~~~~~~~~~~~~~~~~~~
+paso1_main.c:25:24: error: implicit declaration of function ‘wordscounter_get_words’ [-Wimplicit-function-declaration]
+   25 |         size_t words = wordscounter_get_words(&counter);
+      |                        ^~~~~~~~~~~~~~~~~~~~~~
+paso1_main.c:27:9: error: implicit declaration of function ‘wordscounter_destroy’ [-Wimplicit-function-declaration]
+   27 |         wordscounter_destroy(&counter);
+      |         ^~~~~~~~~~~~~~~~~~~~
+make: *** [<builtin>: paso1_main.o] Error 1
 
+real    0m0.032s
+user    0m0.019s
+sys     0m0.005s
+[Error] Fallo la compilacion del codigo en 'source_unsafe.zip'. Codigo de error 2
+```
 
+Aquí la función main está intentando usar tipos no declarados y genera un error de compilación. Todas estas declaraciones faltantes se encuentran en el archivo ```paso1_wordscounter.h```. Es por eso que en la linea 22 el compilador no reconoce el tipo y en las lineas 23, 24, 25 y 27 no se reconocen las llamadas a las funciones no incluidas. 
 
+#### Verificando el codigo...
 
+```
+/task/student//source_unsafe/paso1_wordscounter.c:27:  Missing space before ( in while(  [whitespace/parens] [5]
+/task/student//source_unsafe/paso1_wordscounter.c:41:  Mismatching spaces inside () in if  [whitespace/parens] [5]
+/task/student//source_unsafe/paso1_wordscounter.c:41:  Should have zero or one spaces inside ( and ) in if  [whitespace/parens] [5]
+/task/student//source_unsafe/paso1_wordscounter.c:47:  An else should appear on the same line as the preceding }  [whitespace/newline] [4]
+/task/student//source_unsafe/paso1_wordscounter.c:47:  If an else has a brace on one side, it should have it on both  [readability/braces] [5]
+/task/student//source_unsafe/paso1_wordscounter.c:48:  Missing space before ( in if(  [whitespace/parens] [5]
+/task/student//source_unsafe/paso1_wordscounter.c:53:  Extra space before last semicolon. If this should be an empty statement, use {} instead.  [whitespace/semicolon] [5]
+/task/student//source_unsafe/paso1_wordscounter.h:5:  Lines should be <= 80 characters long  [whitespace/line_length] [2]
+/task/student//source_unsafe/paso1_main.c:12:  Almost always, snprintf is better than strcpy  [runtime/printf] [4]
+/task/student//source_unsafe/paso1_main.c:15:  An else should appear on the same line as the preceding }  [whitespace/newline] [4]
+/task/student//source_unsafe/paso1_main.c:15:  If an else has a brace on one side, it should have it on both  [readability/braces] [5]
+Done processing /task/student//source_unsafe/paso1_wordscounter.c
+Done processing /task/student//source_unsafe/paso1_wordscounter.h
+Done processing /task/student//source_unsafe/paso1_main.c
+Total errors found: 11
+```
 
+Yendo en orden comentaré los 11 errores mencionados. Dentro del archivo ```paso1_wordscounter.c``` Primero no se está dejando un espacio entre el while y su condición. Luego, en el if de la linea 41 hay 2 espacios extras del lado izquierdo. Dentro de la misma linea ocurre que solamente puede haber hasta un espacio (continuo) dentro de la condición. En la línea 47 no ocurre que el else if arranca donde la condición anterior termina, sino que se va una línea para abajo; las llaves deberían estar en la misma línea. En la línea 48 no hay un espacio entre el paréntesis y el if. En la línea 53 hay un espacio extra entre el "next_state" y el punto y coma. Luego en el archivo ```paso1_wordscounter.h``` se advierte que las líneas no deben tener más de 80 caracteres. Finalmente en ```paso1_main.c``` ocurre que en la línea 12 se está usando la función insegura ```strcpy()``` y recomienda usar snprintf (como se dijo en clase, strcpy es insegura ya que no sabe que tamaño tiene el buffer de destino, cosa que puede hacer que pisemos memoria que no nos corresponde). Finalmente en la línea 15 vemos que el else debería empezar donde termina la llave anterior y que las llaves deberían estar en la misma línea. 
+
+#### Finalizando...
+
+```
+El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que arreglar esto antes de poder continuar.
+```
+
+El Makefile que se usa para este proyecto tiene los flags: ```CFLAGS = -Wall -Werror -pedantic -pedantic-errors``` y particularmente el flag ```-Werror```***transforma todos los warnings en errors.***
 
 
