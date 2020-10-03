@@ -24,7 +24,6 @@ Hola mundo!
 ==7545==
 ==7545== For lists of detected and suppressed errors, rerun with: -s
 ==7545== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-niyoζ:~/Taller-de-Programacion-9508/tp0$
 ```
 
 ### b) Utilidades de Valgrind y opciones más comunes.
@@ -50,7 +49,6 @@ struct tp0{
 	char c;
 	void* ptr;
 };
-
 ``` 
 
 Si tomamos ```sizeof(struct tp0)``` veremos que el resultado será de 16. Esto es ya que el offset del ```char c``` es de 0 y ocupa 1 byte, haciendo que ```void* ptr``` tenga que empezar con offset 1 en el struct, pero esto no ocurre ya que esta posición de memoria no sería múltiplo de su tamaño (es decir, no es múltiplo de 8). En consecuencia el compilador agrega 7 bytes extras entre los elementos del struct). Demostrando así que el valor esperado no es ```sizeof(char) + sizeof(void*)```. 
