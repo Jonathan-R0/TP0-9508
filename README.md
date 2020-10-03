@@ -271,3 +271,64 @@ Vemos con estos diff, que del paso1 al paso2, se eliminaron todos los errores ge
 ```
 El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que arreglar esto antes de poder continuar.
 ```
+
+## PASO 3
+
+#### Desempaquetando y compilando el codigo...
+
+```
+Descomprimiendo el codigo 'source_unsafe.zip'...
+Archive:  source_unsafe.zip
+  inflating: source_unsafe/README.md
+  inflating: source_unsafe/paso3_main.c
+  inflating: source_unsafe/paso3_wordscounter.c
+  inflating: source_unsafe/paso3_wordscounter.h
+Compilando el codigo...
+  CC  paso3_wordscounter.o
+  CC  paso3_main.o
+  LD  tp
+/usr/bin/ld: paso3_main.o: in function `main':
+/task/student/source_unsafe/paso3_main.c:27: undefined reference to `wordscounter_destroy'
+collect2: error: ld returned 1 exit status
+make: *** [/task/student/MakefileTP0:142: tp] Error 1
+
+real    0m0.178s
+user    0m0.123s
+sys     0m0.050s
+[Error] Fallo la compilacion del codigo en 'source_unsafe.zip'. Codigo de error 2
+```
+
+El error es de enlazamiento ya que este ocurre cuando se intenta generar el ejecutable. Cuando main intenta usar el ```wordscounter_destroy``` se encuentra con una función declarada pero sin comportamiento definido. Esto ocurre ya que el compilador asume que toda función declarada está definida en algún lugar, y la búsqueda del código que define el comportamiento es tarea del enlazador. 
+
+#### Verificando el codigo...
+
+```
+Done processing /task/student//source_unsafe/paso3_main.c
+Done processing /task/student//source_unsafe/paso3_wordscounter.c
+Done processing /task/student//source_unsafe/paso3_wordscounter.h
+```
+
+#### Finalizando...
+
+```
+El despaquetado y/o compilacion finalizo con un codigo de error (1). Tendras que arreglar esto antes de poder continuar.
+```
+
+Además notamos que todos los includes necesarios son puestos en código para esta iteración del proyecto.
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ diff paso2_main.c paso3_main.c || diff paso2_wordscounter.c paso3_wordscounter.c || diff paso2_wordscounter.h paso3_wordscounter.h
+4c4
+< #include "paso2_wordscounter.h"
+\---
+\> #include "paso3_wordscounter.h"
+1c1
+< #include "paso2_wordscounter.h"
+\---
+\> #include "paso3_wordscounter.h"
+4a5
+\> #include <stdlib.h>
+3a4,5
+\> #include <string.h>
+\> #include <stdio.h>
+```
