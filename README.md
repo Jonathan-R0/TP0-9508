@@ -455,7 +455,7 @@ Los errores del ***tda test*** son:
 ```
 
 En ***long filename test*** ocurre:
-- Buffer Overflow en la línea 13, dentro de la función main, que se debe estar intentando poner una ruta de archivo de más de 30 caracteres. 
+- Buffer Overflow en la línea 13, dentro de la función main, que ocurre ṕor estar intentando poner una ruta de archivo de más de 30 caracteres.  Si se hubiera usado ***strncpy*** en cambio, no habría overflow en el buffer ya que se puede evitar escribir más de 30 bytes (pero tampoco se podrían acceder a archivos con rutas que no cumplan con este requisito de tamaño máximo).
 
 #### Segmentation Fault y Buffer Overflows 
 
