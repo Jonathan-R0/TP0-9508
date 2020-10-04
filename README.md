@@ -665,12 +665,11 @@ Esta vez los cambios entre iteraciones del programa son más significativos. Ten
 ```
 niyoζ:~/Taller de Programación I/una_palabra$ ./tp input_single_word.txt
 0
-niyoζ:~/Taller de Programación I/una_palabra$ ./tp <input_single_word.txt
+niyoζ:~/Taller de Programación I/una_palabra$ ./tp < input_single_word.txt
 0
-niyoζ:~/Taller de Programación I/una_palabra$ ./tp <input_single_word.txt >output_single_word.txt
+niyoζ:~/Taller de Programación I/una_palabra$ ./tp < input_single_word.txt > output_single_word.txt
 niyoζ:~/Taller de Programación I/una_palabra$ cat output_single_word.txt
 0
 ```
-
 
 <br><p align="center"><img src="img/entregas.png"/></p> 
