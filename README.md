@@ -463,8 +463,6 @@ Estos son dos tipos de errores son muy comunes. Un ***segmentation fault*** ocur
 
 ## PASO 5
 
-Vemos en esta nueva iteración del proyecto que ahora se abre el archivo directamente de lo que el programa recibe por argumento, en vez de usar un buffer por medio. Luego, para evitar el error de la memoria no liberada, se usa un string cuya información existe en el stack en vez del heap. Finalmente se actualizan los includes para matchear los nombres de los archivos.
-
 ```
 niyoζ:~/Taller de Programación I/TP0-9508$ diff paso4_main.c paso5_main.c || diff paso4_wordscounter.c paso5_wordscounter.c || diff paso4_wordscounter.h paso5_wordscounter.h
 4c4
@@ -497,4 +495,116 @@ niyoζ:~/Taller de Programación I/TP0-9508$ diff paso4_main.c paso5_main.c || d
 \>     const char* delim_words = " ,.;:\n";
 ```
 
+Vemos en esta nueva iteración del proyecto que ahora se abre el archivo directamente de lo que el programa recibe por argumento, en vez de usar un buffer por medio. Luego, para evitar el error de la memoria no liberada, se usa un string cuya información existe en el stack en vez del heap. Finalmente se actualizan los includes para matchear los nombres de los archivos.
 
+#### Tests fallando
+
+
+```
+[=>] Comparando archivo_invalido/__return_code__...
+1c1
+< 255
+\---
+\> 1
+```
+
+Vemos que el test de ***invalid file*** falla porque en vez de devolver 1, el programa devuelve 255. 
+
+```
+[=>] Comparando una_palabra/__stdout__...
+1c1
+< 0
+\---
+\> 1
+```
+
+El ***single word*** test no pasa ya que esperaba que salga 1 por stdout y salió 0; es decir, no contabilizó la única palabra.
+
+#### Hexdump
+
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ hexdump -C input_single_word.txt
+00000000  77 6f 72 64                                       |word|
+00000004
+```
+
+El último caracter del archivo es el valor hexadecimal 64, que corresponde a la letra 'd' de la codificación ASCII.
+
+#### GDB
+
+Comandos utilizados:
+
+- ```gdb ./tp```: inicia el programa gdb para debuggear el ejecutable ***tp***.
+- ```info functions```: muestra información de todas las funciones involucradas en el programa. 
+- ```list wordscounter_next_state```: muestra el código de la función que le pasamos.
+- ```list```: si no puede mostrar toda la información, este comando muestra mas líneas de código.
+- ```break 45```: pone un breakpoint en la línea 45, es decir, si se ejecuta el código ***y llega hasta ahí***, gdb pondrá en pausa la ejecución.
+- ```run input_single_word.txt```: ejecuta el programa pasándole por argumento el .txt ahí puesto.
+- ```quit```: acaba con el proceso.
+
+```
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from ./tp...
+(gdb) info functions
+All defined functions:
+
+File paso5_main.c:
+9:  int main(int, char **);
+
+File paso5_wordscounter.c:
+14: void wordscounter_create(wordscounter_t *);
+18: void wordscounter_destroy(wordscounter_t *);
+22: size_t wordscounter_get_words(wordscounter_t *);
+26: void wordscounter_process(wordscounter_t *, FILE *);
+34: static char wordscounter_next_state(wordscounter_t *, char, char);
+
+Non-debugging symbols:
+0x0000000000001000  _init
+0x0000000000001090  __cxa_finalize@plt
+0x00000000000010a0  fclose@plt
+0x00000000000010b0  __stack_chk_fail@plt
+0x00000000000010c0  strchr@plt
+0x00000000000010d0  __printf_chk@plt
+0x00000000000010e0  fopen@plt
+0x00000000000010f0  getc@plt
+0x00000000000011b0  _start
+0x00000000000011e0  deregister_tm_clones
+0x0000000000001210  register_tm_clones
+0x0000000000001250  __do_global_dtors_aux
+0x0000000000001290  frame_dummy
+0x0000000000001380  __libc_csu_init
+0x00000000000013f0  __libc_csu_fini
+0x00000000000013f8  _fini
+(gdb) list wordscounter_next_state
+33
+34  static char wordscounter_next_state(wordscounter_t *self, char state, char c) {
+35      const char* delim_words = " ,.;:\n";
+36
+37      char next_state = state;
+38      if (c == EOF) {
+39          next_state = STATE_FINISHED;
+40      } else if (state == STATE_WAITING_WORD) {
+41          if (strchr(delim_words, c) == NULL)
+42              next_state = STATE_IN_WORD;
+(gdb) list
+43      } else if (state == STATE_IN_WORD) {
+44          if (strchr(delim_words, c) != NULL) {
+45              self->words++;
+46              next_state = STATE_WAITING_WORD;
+47          }
+48      }
+49      return next_state;
+50  }
+51
+(gdb) break 45
+Breakpoint 1 at 0x1300: file paso5_wordscounter.c, line 45.
+(gdb) run input_single_word.txt
+Starting program: /home/niyo/Taller de Programación I/una_palabra/tp input_single_word.txt
+0
+[Inferior 1 (process 3164) exited normally]
+(gdb) quit
+```
+
+Nunca se ejecuta la línea ```self->words++;``` ya que no hay ningún caracter en el archivo que sea ' ' , ',' , '.' , ';', ':', ó '\n'. Por lo tanto no entrará en ese bloque de código. 
