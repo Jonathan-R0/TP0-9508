@@ -672,4 +672,5 @@ niyoζ:~/Taller de Programación I/una_palabra$ cat output_single_word.txt
 0
 ```
 
-<p align="center"><img src="img/entregas.png" alt="Entregas (las primeras dos fueron entregas erróneas)"/></p>
+
+<br><p align="center"><img src="img/entregas.png"/></p> 
