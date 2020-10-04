@@ -607,4 +607,69 @@ Starting program: /home/niyo/Taller de Programación I/una_palabra/tp input_sing
 (gdb) quit
 ```
 
-Nunca se ejecuta la línea ```self->words++;``` ya que no hay ningún caracter en el archivo que sea ' ' , ',' , '.' , ';', ':', ó '\n'. Por lo tanto no entrará en ese bloque de código. 
+Nunca se ejecuta la línea ```self->words++;``` ya que no hay ningún caracter en el archivo que sea ' ' , ',' , '.' , ';', ':', ó '\n'. Por lo tanto no entrará en ese bloque de código.
+
+## PASO 6 
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ diff paso5_main.c paso6_main.c || diff paso5_wordscounter.c paso6_wordscounter.c || diff paso5_wordscounter.h paso6_wordscounter.h
+4c4
+< #include "paso5_wordscounter.h"
+\---
+\> #include "paso6_wordscounter.h"
+7c7
+< #define ERROR -1
+\---
+\> #define ERROR 1
+1c1
+< #include "paso5_wordscounter.h"
+\---
+\> #include "paso6_wordscounter.h"
+9a10
+\> #define DELIM_WORDS " ,.;:\n"
+35,36d35
+<     const char* delim_words = " ,.;:\n";
+<
+38,41c37,41
+<     if (c == EOF) {
+<         next_state = STATE_FINISHED;
+<     } else if (state == STATE_WAITING_WORD) {
+<         if (strchr(delim_words, c) == NULL)
+\---
+\>
+\>     if (state == STATE_WAITING_WORD) {
+\>         if (c == EOF) {
+\>             next_state = STATE_FINISHED;
+\>         } else if (strchr(DELIM_WORDS, c) == NULL) {
+42a43
+\>         }
+44c45,48
+<         if (strchr(delim_words, c) != NULL) {
+\---
+\>         if (c == EOF) {
+\>             next_state = STATE_FINISHED;
+\>             self->words++;
+\>         } else if (strchr(DELIM_WORDS, c) != NULL) {
+48a53
+\>
+```
+
+Esta vez los cambios entre iteraciones del programa son más significativos. Tenemos:
+- Como siempre, una actualización de los includes
+- Se cambia la definición de la salida de ERROR a 1, cosa que arregla el caso del ***invalid file*** que esperaba de salida el valor 1.
+- Se definen los carácteres delimitadores en la macro DELIM_WORDS
+- Se modifica la lógica de control de la función ***wordscounter_next_state***
+
+#### Ejecución local del programa
+
+```
+niyoζ:~/Taller de Programación I/una_palabra$ ./tp input_single_word.txt
+0
+niyoζ:~/Taller de Programación I/una_palabra$ ./tp <input_single_word.txt
+0
+niyoζ:~/Taller de Programación I/una_palabra$ ./tp <input_single_word.txt >output_single_word.txt
+niyoζ:~/Taller de Programación I/una_palabra$ cat output_single_word.txt
+0
+```
+
+<center><img src="img/entregas.png"><center>
