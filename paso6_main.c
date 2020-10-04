@@ -1,17 +1,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "paso4_wordscounter.h"
+#include "paso6_wordscounter.h"
 
 #define SUCCESS 0
-#define ERROR -1
+#define ERROR 1
 
 int main(int argc, char* argv[]) {
     FILE* input;
     if (argc > 1) {
-        char filepath[30];
-        memcpy(filepath, argv[1], strlen(argv[1]) + 1);
-        input = fopen(filepath, "r");
+        input = fopen(argv[1], "r");
     } else {
         input = stdin;
     }
@@ -25,6 +23,8 @@ int main(int argc, char* argv[]) {
         size_t words = wordscounter_get_words(&counter);
         printf("%zu\n", words);
         wordscounter_destroy(&counter);
+        if (input != stdin)
+            fclose(input);
         return SUCCESS;
     }
 }

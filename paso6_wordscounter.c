@@ -1,4 +1,4 @@
-#include "paso4_wordscounter.h"
+#include "paso6_wordscounter.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -7,6 +7,7 @@
 #define STATE_WAITING_WORD 0
 #define STATE_IN_WORD 1
 #define STATE_FINISHED 2
+#define DELIM_WORDS " ,.;:\n"
 
 // Compara el caracter leído c y define el nuevo estado.
 static char wordscounter_next_state(wordscounter_t *self, char state, char c);
@@ -32,27 +33,24 @@ void wordscounter_process(wordscounter_t *self, FILE *text_file) {
 }
 
 static char wordscounter_next_state(wordscounter_t *self, char state, char c) {
-    char* delim_words = malloc(7 * sizeof(char));
-    delim_words[0] = ' ';
-    delim_words[1] = ',';
-    delim_words[2] = '.';
-    delim_words[3] = ';';
-    delim_words[4] = ':';
-    delim_words[5] = '\n';
-    delim_words[6] = '\0';
-
     char next_state = state;
-    if (c == EOF) {
-        next_state = STATE_FINISHED;
-    } else if (state == STATE_WAITING_WORD) {
-        if (strchr(delim_words, c) == NULL)
+
+    if (state == STATE_WAITING_WORD) {
+        if (c == EOF) { 
+            next_state = STATE_FINISHED;
+        } else if (strchr(DELIM_WORDS, c) == NULL) {
             next_state = STATE_IN_WORD;
+        }
     } else if (state == STATE_IN_WORD) {
-        if (strchr(delim_words, c) != NULL) {
+        if (c == EOF) { 
+            next_state = STATE_FINISHED;
+            self->words++;
+        } else if (strchr(DELIM_WORDS, c) != NULL) {
             self->words++;
             next_state = STATE_WAITING_WORD;
         }
     }
+
     return next_state;
 }
 
