@@ -672,4 +672,4 @@ niyoζ:~/Taller de Programación I/una_palabra$ cat output_single_word.txt
 0
 ```
 
-<center><img src="img/entregas.png"><center>
+<div style="text-align:center"><img src="img/entregas.png" /></div>
