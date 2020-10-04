@@ -335,6 +335,8 @@ niyoζ:~/Taller de Programación I/TP0-9508$ diff paso2_main.c paso3_main.c || d
 
 ## PASO 4
 
+Vemos en esta iteración del proyecto que se actualizan los includes y se le agrega funcionalidad nula al ```wordscounter_destroy```. Esto va a hacer que no podamos liberar los datos que se fueron guardando en el heap.
+
 ```
 niyoζ:~/Taller de Programación I/TP0-9508$ diff paso3_main.c paso4_main.c || diff paso3_wordscounter.c paso4_wordscounter.c || diff paso3_wordscounter.h paso4_wordscounter.h
 4c4
@@ -352,3 +354,109 @@ niyoζ:~/Taller de Programación I/TP0-9508$ diff paso3_main.c paso4_main.c || d
 \>     //do nothing
 ```
 
+# Errores
+
+```
+==00:00:00:00.000 59== Memcheck, a memory error detector
+==00:00:00:00.000 59== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==00:00:00:00.000 59== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==00:00:00:00.000 59== Command: ./tp input_tda.txt
+==00:00:00:00.000 59== Parent PID: 58
+==00:00:00:00.000 59==
+==00:00:00:00.953 59==
+==00:00:00:00.953 59== FILE DESCRIPTORS: 5 open at exit.
+==00:00:00:00.953 59== Open file descriptor 4: input_tda.txt
+==00:00:00:00.953 59==    at 0x495FEAB: open (open64.c:48)
+==00:00:00:00.953 59==    by 0x48E2195: _IO_file_open (fileops.c:189)
+==00:00:00:00.953 59==    by 0x48E2459: _IO_file_fopen@@GLIBC_2.2.5 (fileops.c:281)
+==00:00:00:00.953 59==    by 0x48D4B0D: __fopen_internal (iofopen.c:75)
+==00:00:00:00.954 59==    by 0x48D4B0D: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==00:00:00:00.954 59==    by 0x109177: main (paso4_main.c:14)
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== Open file descriptor 3: /task/student/cases/tda/__valgrind__
+==00:00:00:00.954 59==    <inherited from parent>
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== Open file descriptor 2: /task/student/cases/tda/__stderr__
+==00:00:00:00.954 59==    <inherited from parent>
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== Open file descriptor 1: /task/student/cases/tda/__stdout__
+==00:00:00:00.954 59==    <inherited from parent>
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== Open file descriptor 0: /task/student/cases/tda/__stdin__
+==00:00:00:00.954 59==    <inherited from parent>
+==00:00:00:00.954 59==
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== HEAP SUMMARY:
+==00:00:00:00.954 59==     in use at exit: 1,977 bytes in 216 blocks
+==00:00:00:00.954 59==   total heap usage: 218 allocs, 2 frees, 10,169 bytes allocated
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== 472 bytes in 1 blocks are still reachable in loss record 1 of 2
+==00:00:00:00.954 59==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:00.954 59==    by 0x48D4AAD: __fopen_internal (iofopen.c:65)
+==00:00:00:00.954 59==    by 0x48D4AAD: fopen@@GLIBC_2.2.5 (iofopen.c:86)
+==00:00:00:00.954 59==    by 0x109177: main (paso4_main.c:14)
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== 1,505 bytes in 215 blocks are definitely lost in loss record 2 of 2
+==00:00:00:00.954 59==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:00.954 59==    by 0x109301: wordscounter_next_state (paso4_wordscounter.c:35)
+==00:00:00:00.954 59==    by 0x1093B5: wordscounter_process (paso4_wordscounter.c:30)
+==00:00:00:00.954 59==    by 0x109197: main (paso4_main.c:24)
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== LEAK SUMMARY:
+==00:00:00:00.954 59==    definitely lost: 1,505 bytes in 215 blocks
+==00:00:00:00.954 59==    indirectly lost: 0 bytes in 0 blocks
+==00:00:00:00.954 59==      possibly lost: 0 bytes in 0 blocks
+==00:00:00:00.954 59==    still reachable: 472 bytes in 1 blocks
+==00:00:00:00.954 59==         suppressed: 0 bytes in 0 blocks
+==00:00:00:00.954 59==
+==00:00:00:00.954 59== For lists of detected and suppressed errors, rerun with: -s
+==00:00:00:00.954 59== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+
+Los errores del ***tda test*** son:
+- En la línea 14 de ```paso4_main.c``` se abre un archivo y no se cierra. 
+- En la línea 35 de ```paso4_wordscounter.c``` no se está liberando la memoria que se pide. 
+
+```
+==00:00:00:00.000 47== Memcheck, a memory error detector
+==00:00:00:00.000 47== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==00:00:00:00.000 47== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==00:00:00:00.000 47== Command: ./tp input_extremely_long_filename.txt
+==00:00:00:00.000 47== Parent PID: 46
+==00:00:00:00.000 47==
+**00:00:00:00.843 47** *** memcpy_chk: buffer overflow detected ***: program terminated
+==00:00:00:00.843 47==    at 0x483E9CC: ??? (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:00.843 47==    by 0x4843C0A: __memcpy_chk (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==00:00:00:00.843 47==    by 0x109168: memcpy (string_fortified.h:34)
+==00:00:00:00.843 47==    by 0x109168: main (paso4_main.c:13)
+==00:00:00:00.868 47==
+==00:00:00:00.868 47== FILE DESCRIPTORS: 4 open at exit.
+==00:00:00:00.868 47== Open file descriptor 3: /task/student/cases/nombre_largo/__valgrind__
+==00:00:00:00.868 47==    <inherited from parent>
+==00:00:00:00.868 47==
+==00:00:00:00.868 47== Open file descriptor 2: /task/student/cases/nombre_largo/__stderr__
+==00:00:00:00.868 47==    <inherited from parent>
+==00:00:00:00.868 47==
+==00:00:00:00.868 47== Open file descriptor 1: /task/student/cases/nombre_largo/__stdout__
+==00:00:00:00.868 47==    <inherited from parent>
+==00:00:00:00.868 47==
+==00:00:00:00.868 47== Open file descriptor 0: /task/student/cases/nombre_largo/__stdin__
+==00:00:00:00.868 47==    <inherited from parent>
+==00:00:00:00.868 47==
+==00:00:00:00.868 47==
+==00:00:00:00.868 47== HEAP SUMMARY:
+==00:00:00:00.869 47==     in use at exit: 0 bytes in 0 blocks
+==00:00:00:00.869 47==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==00:00:00:00.869 47==
+==00:00:00:00.869 47== All heap blocks were freed -- no leaks are possible
+==00:00:00:00.869 47==
+==00:00:00:00.869 47== For lists of detected and suppressed errors, rerun with: -s
+==00:00:00:00.869 47== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+
+En ***long filename test*** ocurre:
+- Buffer Overflow en la línea 13, dentro de la función main, que se debe estar intentando poner una ruta de archivo de más de 30 caracteres. 
+
+#### Segmentation Fault y Buffer Overflows 
+
+Estos son dos tipos de errores son muy comunes. Un ***segmentation fault*** ocurre cuando intentamos leer o acceder a memoria que no nos pertenece. En cambio, el ***buffer overflow*** ocurre cuando intentamos escribir más bytes de lo que nuestra variable soporta y terminamos corrompiendo memoria que no nos pertenece.
