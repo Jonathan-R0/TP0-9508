@@ -1,4 +1,4 @@
-#include "paso3_wordscounter.h"
+#include "paso5_wordscounter.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -15,6 +15,10 @@ void wordscounter_create(wordscounter_t *self) {
     self->words = 0;
 }
 
+void wordscounter_destroy(wordscounter_t *self) {
+    //do nothing
+}
+
 size_t wordscounter_get_words(wordscounter_t *self) {
     return self->words;
 }
@@ -28,14 +32,7 @@ void wordscounter_process(wordscounter_t *self, FILE *text_file) {
 }
 
 static char wordscounter_next_state(wordscounter_t *self, char state, char c) {
-    char* delim_words = malloc(7 * sizeof(char));
-    delim_words[0] = ' ';
-    delim_words[1] = ',';
-    delim_words[2] = '.';
-    delim_words[3] = ';';
-    delim_words[4] = ':';
-    delim_words[5] = '\n';
-    delim_words[6] = '\0';
+    const char* delim_words = " ,.;:\n";
 
     char next_state = state;
     if (c == EOF) {

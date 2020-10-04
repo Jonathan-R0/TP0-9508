@@ -354,7 +354,7 @@ niyoζ:~/Taller de Programación I/TP0-9508$ diff paso3_main.c paso4_main.c || d
 \>     //do nothing
 ```
 
-# Errores
+#### Errores
 
 ```
 ==00:00:00:00.000 59== Memcheck, a memory error detector
@@ -460,3 +460,41 @@ En ***long filename test*** ocurre:
 #### Segmentation Fault y Buffer Overflows 
 
 Estos son dos tipos de errores son muy comunes. Un ***segmentation fault*** ocurre cuando intentamos leer o acceder a memoria que no nos pertenece. En cambio, el ***buffer overflow*** ocurre cuando intentamos escribir más bytes de lo que nuestra variable soporta y terminamos corrompiendo memoria que no nos pertenece.
+
+## PASO 5
+
+Vemos en esta nueva iteración del proyecto que ahora se abre el archivo directamente de lo que el programa recibe por argumento, en vez de usar un buffer por medio. Luego, para evitar el error de la memoria no liberada, se usa un string cuya información existe en el stack en vez del heap. Finalmente se actualizan los includes para matchear los nombres de los archivos.
+
+```
+niyoζ:~/Taller de Programación I/TP0-9508$ diff paso4_main.c paso5_main.c || diff paso4_wordscounter.c paso5_wordscounter.c || diff paso4_wordscounter.h paso5_wordscounter.h
+4c4
+< #include "paso4_wordscounter.h"
+\---
+\> #include "paso5_wordscounter.h"
+12,14c12
+<         char filepath[30];
+<         memcpy(filepath, argv[1], strlen(argv[1]) + 1);
+<         input = fopen(filepath, "r");
+\---
+\>         input = fopen(argv[1], "r");
+27a26,27
+\>         if (input != stdin)
+\>             fclose(input);
+1c1
+< #include "paso4_wordscounter.h"
+\---
+\> #include "paso5_wordscounter.h"
+35,42c35
+<     char* delim_words = malloc(7 * sizeof(char));
+<     delim_words[0] = ' ';
+<     delim_words[1] = ',';
+<     delim_words[2] = '.';
+<     delim_words[3] = ';';
+<     delim_words[4] = ':';
+<     delim_words[5] = '\n';
+<     delim_words[6] = '\0';
+\---
+\>     const char* delim_words = " ,.;:\n";
+```
+
+
